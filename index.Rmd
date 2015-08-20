@@ -1,0 +1,64 @@
+---
+title       : Orange Tree Growth Estimator
+subtitle    : A demonstration of non linear regression model in R 
+author      : Vishnu
+framework   : io2012                # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js          # {highlight.js, prettify, highlight}
+hitheme     : tomorrow              # 
+widgets     : [mathjax, bootstrap]  # {mathjax, quiz, bootstrap}
+mode        : selfcontained         # {standalone, draft}
+knit        : slidify::knit2slides
+---
+
+
+## Overview
+
+- Demonstrates how a simple nonlinear least squares prediction model can be fitted
+in R.
+- The application tries to estimate the size of an orange tree given the age.
+- Input is the age measured in days and output is the trunk circumference (mm).
+
+---
+
+## Dataset
+
+- The Orange dataset in R `nlme` package is used to train the predictor
+- The trunk circumference of 5 trees is measured at 7 different  ages
+- Data frame consists 35 rows of records of the growth containing 3 columns:
+    * Tree: an ordered factor indicating the tree on which the measurement is made.
+    * age: a numeric vector giving the age of the tree in days
+    * circumference: a numeric vector of "trunk circumferences at breast height" (mm) commonly used by foresters.
+
+
+```{r dataSummary}
+head(Orange)
+```
+
+---
+
+## Prediction Model
+
+- Non linear logistic regression model.
+- The R `nls` function is used to determine the nonlinear (weighted) least-squares estimates of the parameters of the model.
+- Unlike in the linear case, the parameters must be declared explicitly in a nonlinear model formula. `SSlogis` function is used to determine the self starting estimates.
+
+```{r modelFit}
+fit <- nls(circumference ~ SSlogis(age, Asym, xmid, scale), data = Orange)
+fit
+```
+
+---
+
+## Prediction Model (contd)
+
+```{r simpleplot,fig.width=7,fig.height=4}
+library(ggplot2)
+g <- qplot(age, circumference, data = Orange, geom = c("point", "line"), 
+           color = Tree, xlab = "Age (days)", ylab = "Circumference (mm)",
+           main = "Growth of Orange Trees")
+age <- seq(0, 1600, length.out = 101)
+g <- g + geom_line(aes(x = age, y = predict(fit, list(age = age))), 
+                   size = 2, color = "#7777FF")
+g
+```
+

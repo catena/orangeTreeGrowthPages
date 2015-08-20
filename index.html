@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Orange Tree Growth Estimator</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Orange Tree Growth Estimator">
+  <meta name="author" content="Vishnu">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="libraries/widgets/bootstrap/css/bootstrap.css"></link>
+<link rel=stylesheet href="./assets/css/custom.css"></link>
+<link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Orange Tree Growth Estimator</h1>
+    <h2>A demonstration of non linear regression model in R</h2>
+    <p>Vishnu<br/></p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Overview</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Demonstrates how a simple nonlinear least squares prediction model can be fitted
+in R.</li>
+<li>The application tries to estimate the size of an orange tree given the age.</li>
+<li>Input is the age measured in days and output is the trunk circumference (mm).</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>Dataset</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>The Orange dataset in R <code>nlme</code> package is used to train the predictor</li>
+<li>The trunk circumference of 5 trees is measured at 7 different  ages</li>
+<li>Data frame consists 35 rows of records of the growth containing 3 columns:
+
+<ul>
+<li>Tree: an ordered factor indicating the tree on which the measurement is made.</li>
+<li>age: a numeric vector giving the age of the tree in days</li>
+<li>circumference: a numeric vector of &quot;trunk circumferences at breast height&quot; (mm) commonly used by foresters.</li>
+</ul></li>
+</ul>
+
+<pre><code class="r">head(Orange)
+</code></pre>
+
+<pre><code>##   Tree  age circumference
+## 1    1  118            30
+## 2    1  484            58
+## 3    1  664            87
+## 4    1 1004           115
+## 5    1 1231           120
+## 6    1 1372           142
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Prediction Model</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Non linear logistic regression model.</li>
+<li>The R <code>nls</code> function is used to determine the nonlinear (weighted) least-squares estimates of the parameters of the model.</li>
+<li>Unlike in the linear case, the parameters must be declared explicitly in a nonlinear model formula. <code>SSlogis</code> function is used to determine the self starting estimates.</li>
+</ul>
+
+<pre><code class="r">fit &lt;- nls(circumference ~ SSlogis(age, Asym, xmid, scale), data = Orange)
+fit
+</code></pre>
+
+<pre><code>## Nonlinear regression model
+##   model: circumference ~ SSlogis(age, Asym, xmid, scale)
+##    data: Orange
+##  Asym  xmid scale 
+## 192.7 728.8 353.5 
+##  residual sum-of-squares: 17480
+## 
+## Number of iterations to convergence: 0 
+## Achieved convergence tolerance: 3.56e-06
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Prediction Model</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">library(ggplot2)
+g &lt;- qplot(age, circumference, data = Orange, geom = c(&quot;point&quot;, &quot;line&quot;), 
+           color = Tree, xlab = &quot;Age (days)&quot;, ylab = &quot;Circumference (mm)&quot;,
+           main = &quot;Growth of Orange Trees&quot;)
+age &lt;- seq(0, 1600, length.out = 101)
+g &lt;- g + geom_line(aes(x = age, y = predict(fit, list(age = age))), 
+                   size = 2, color = &quot;#7777FF&quot;)
+g
+</code></pre>
+
+<p><img src="assets/fig/simpleplot-1.png" alt="plot of chunk simpleplot"> </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Overview'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='Dataset'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Prediction Model'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Prediction Model'>
+         4
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  <script src="libraries/widgets/bootstrap/js/bootstrap.min.js"></script>
+<script src="libraries/widgets/bootstrap/js/bootbox.min.js"></script>
+
+  <!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        processEscapes: true
+      }
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script> -->
+  <script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+<script>  
+  $(function (){ 
+    $("#example").popover(); 
+    $("[rel='tooltip']").tooltip(); 
+  });  
+  </script>  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>

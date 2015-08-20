@@ -17,6 +17,9 @@ knit        : slidify::knit2slides
 in R.
 - The application tries to estimate the size of an orange tree given the age.
 - Input is the age measured in days and output is the trunk circumference (mm).
+- Features an interactive graph panel that displays the training data as well as the fitted model.
+
+<img height="150" src="assets/img/app-screenshot.png" />
 
 ---
 
